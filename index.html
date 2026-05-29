@@ -1,345 +1,945 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Altamish Arif - Penetration Tester</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        :root {
-            --neon-green: #00ff00;
-            --dark-bg: #0a0a0a;
-            --terminal-green: #39ff14;
-            --matrix-bg: rgba(0, 255, 0, 0.05);
-            --card-bg: rgba(16, 16, 16, 0.95);
-        }
-        
-        @keyframes matrixRain {
-            0% { background-position: 0% 0%; }
-            100% { background-position: 0% 100%; }
-        }
-        
-        @keyframes glitch {
-            0% { transform: translate(0); }
-            20% { transform: translate(-2px, 2px); }
-            40% { transform: translate(-2px, -2px); }
-            60% { transform: translate(2px, 2px); }
-            80% { transform: translate(2px, -2px); }
-            100% { transform: translate(0); }
-        }
-        
-        @keyframes typing {
-            from { width: 0; }
-            to { width: 100%; }
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Courier New', monospace;
-            background-color: var(--dark-bg);
-            color: var(--terminal-green);
-            line-height: 1.6;
-            position: relative;
-            overflow-x: hidden;
-        }
-        
-        body::before {
-            content: "";
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(0deg, transparent 50%, var(--matrix-bg) 100%);
-            pointer-events: none;
-            z-index: -1;
-        }
-        
-        .matrix-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: repeating-linear-gradient(
-                0deg,
-                rgba(0, 255, 0, 0.03) 0%,
-                rgba(0, 255, 0, 0.03) 50%,
-                transparent 50%,
-                transparent 100%
-            );
-            background-size: 100% 4px;
-            animation: matrixRain 20s linear infinite;
-            pointer-events: none;
-            z-index: -1;
-        }
-        
-        nav {
-            position: fixed;
-            width: 100%;
-            padding: 1rem;
-            background: rgba(0, 0, 0, 0.9);
-            backdrop-filter: blur(10px);
-            z-index: 1000;
-            border-bottom: 1px solid var(--neon-green);
-        }
-        
-        nav ul {
-            display: flex;
-            justify-content: flex-end;
-            list-style: none;
-            max-width: 1200px;
-            margin: 0 auto;
-            gap: 2rem;
-        }
-        
-        nav a {
-            color: var(--neon-green);
-            text-decoration: none;
-            padding: 0.5rem 1rem;
-            border: 1px solid transparent;
-            transition: all 0.3s ease;
-        }
-        
-        nav a:hover {
-            border-color: var(--neon-green);
-            text-shadow: 0 0 5px var(--neon-green);
-            box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
-        }
-        
-        header {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            padding: 6rem 2rem 2rem;
-            position: relative;
-        }
-        
-        .terminal-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: var(--card-bg);
-            padding: 2rem;
-            border: 1px solid var(--neon-green);
-            box-shadow: 0 0 20px rgba(0, 255, 0, 0.2);
-            position: relative;
-        }
-        
-        .terminal-header {
-            border-bottom: 1px solid var(--neon-green);
-            padding-bottom: 1rem;
-            margin-bottom: 2rem;
-        }
-        
-        .terminal-prompt::before {
-            content: ">";
-            color: var(--neon-green);
-            margin-right: 0.5rem;
-        }
-        
-        .typing-text {
-            overflow: hidden;
-            white-space: nowrap;
-            border-right: 2px solid var(--neon-green);
-            animation: typing 3s steps(40, end), blink-caret 0.75s step-end infinite;
-            margin-bottom: 1rem;
-        }
-        
-        .skills-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr); /* 2 items per row */
-            gap: 2rem;
-            margin-top: 3rem;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Altamish Arif — Security Professional</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;400;500;700&family=Epilogue:ital,wght@0,300;0,400;0,500;1,300&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f8f7f4;
+  --white: #ffffff;
+  --ink: #111111;
+  --navy: #0f1f3d;
+  --blue: #1a3a8f;
+  --blue-mid: #2d5be3;
+  --blue-light: #e8eef9;
+  --rule: #e0ddd5;
+  --muted: #7a7670;
+  --muted-light: #b0ada7;
+}
 
-        
-        .skill-card {
-            background: var(--card-bg);
-            padding: 2rem;
-            border: 1px solid var(--neon-green);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .skill-card:hover {
-            animation: glitch 0.3s ease;
-        }
-        
-        .skill-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(45deg, transparent, var(--matrix-bg), transparent);
-            transform: translateX(-100%);
-            transition: transform 0.6s;
-        }
-        
-        .skill-card:hover::before {
-            transform: translateX(100%);
-        }
-        .stats {
-            display: flex; /* Display items in a row */
-            justify-content: center; /* Center items horizontally */
-            align-items: center; /* Center items vertically */
-            gap: 20px; /* Add space between items */
-            flex-wrap: nowrap; /* Prevent wrapping to the next line */
-            overflow-x: auto; /* Allow horizontal scrolling if needed */
-            padding: 10px 0; /* Add some padding */
-        }
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
 
-        .stat-item {
-            flex: 0 0 auto; /* Prevent items from shrinking or growing */
-            border: none; /* Remove any borders */
-            background: none; /* Remove any background */
-            padding: 0; /* Remove padding */
-        }
+body {
+  font-family: 'Epilogue', sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  overflow-x: hidden;
+}
 
-        .stat-item img {
-            display: block; /* Ensure images are block elements */
-            max-width: 100%; /* Ensure images don't overflow */
-            height: auto; /* Maintain aspect ratio */
-        }
-/*        .stats {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1rem;
-            margin: 2rem 0;
-        }
-        
-        .stat-item {
-            text-align: center;
-            padding: 1rem;
-            border: 1px solid var(--neon-green);
-            background: var(--card-bg);
-        }
-        */
-        .cta-section {
-            text-align: center;
-            padding: 4rem 2rem;
-            background: var(--card-bg);
-            margin-top: 4rem;
-            border-top: 1px solid var(--neon-green);
-        }
-        
-        .cta-button {
-            display: inline-block;
-            padding: 1rem 2rem;
-            background: transparent;
-            color: var(--neon-green);
-            border: 1px solid var(--neon-green);
-            text-decoration: none;
-            margin-top: 2rem;
-            transition: all 0.3s ease;
-        }
-        
-        .cta-button:hover {
-            background: var(--neon-green);
-            color: var(--dark-bg);
-            box-shadow: 0 0 20px rgba(0, 255, 0, 0.4);
-        }
-        
-        @media (max-width: 768px) {
-            .stats {
-                grid-template-columns: 1fr;
-            }
-            
-            nav ul {
-                justify-content: center;
-                gap: 1rem;
-            }
-        }
-    </style>
+/* NAV */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1000;
+  background: var(--white);
+  border-bottom: 1px solid var(--rule);
+  padding: 0 5vw;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.nav-logo {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--navy);
+}
+.nav-badge {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.6rem;
+  font-weight: 500;
+  background: var(--blue-light);
+  color: var(--blue-mid);
+  padding: 0.25rem 0.6rem;
+  letter-spacing: 0.06em;
+}
+nav ul { display: flex; gap: 2rem; list-style: none; }
+nav a {
+  text-decoration: none;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 400;
+  transition: color 0.2s;
+}
+nav a:hover { color: var(--ink); }
+
+/* HERO */
+header {
+  background: var(--white);
+  border-bottom: 1px solid var(--rule);
+  padding: 8rem 5vw 5rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6vw;
+  align-items: center;
+  min-height: 90vh;
+  margin-top: 64px;
+}
+.hero-eyebrow {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--blue-mid);
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.hero-eyebrow::before {
+  content: '';
+  display: block;
+  width: 2rem;
+  height: 1px;
+  background: var(--blue-mid);
+}
+.hero-h1 {
+  font-family: 'Unbounded', sans-serif;
+  font-size: clamp(2.2rem, 4vw, 4rem);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: var(--navy);
+  margin-bottom: 1.75rem;
+}
+.hero-h1 span { color: var(--blue-mid); }
+.hero-sub {
+  font-size: 1rem;
+  font-weight: 300;
+  line-height: 1.75;
+  color: var(--muted);
+  max-width: 44ch;
+  margin-bottom: 2.5rem;
+}
+.tag-row { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 2.5rem; }
+.tag {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  font-weight: 500;
+  padding: 0.35rem 0.8rem;
+  background: var(--bg);
+  border: 1px solid var(--rule);
+  color: var(--navy);
+  text-transform: uppercase;
+}
+.hero-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.9rem 2rem;
+  background: var(--navy);
+  color: #fff;
+  text-decoration: none;
+  font-family: 'Unbounded', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  transition: background 0.2s;
+}
+.hero-cta:hover { background: var(--blue-mid); }
+
+/* CERT PANEL */
+.cert-panel {
+  background: var(--navy);
+  padding: 2.5rem;
+  display: flex;
+  flex-direction: column;
+}
+.cert-panel-header {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.4);
+  margin-bottom: 1.25rem;
+}
+.cert-entry {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 1rem;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.06);
+  text-decoration: none;
+  color: #fff;
+  margin-bottom: 0.5rem;
+  transition: background 0.2s, border-color 0.2s;
+}
+.cert-entry:hover {
+  background: rgba(45,91,227,0.25);
+  border-color: rgba(45,91,227,0.4);
+}
+.cert-entry img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  flex-shrink: 0;
+  filter: brightness(0.95);
+}
+.cert-entry-name {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: #fff;
+  margin-bottom: 0.15rem;
+}
+.cert-entry-issuer {
+  font-size: 0.65rem;
+  color: rgba(255,255,255,0.4);
+}
+
+/* METRICS BAND */
+.metrics {
+  background: var(--blue-light);
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  padding: 2.5rem 5vw;
+  display: flex;
+  gap: 4rem;
+  align-items: center;
+}
+.metric { display: flex; flex-direction: column; gap: 0.3rem; }
+.metric-num {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--blue-mid);
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+.metric-label {
+  font-size: 0.72rem;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+}
+.metrics-divider {
+  width: 1px;
+  height: 2.5rem;
+  background: rgba(15,31,61,0.12);
+}
+
+/* SECTIONS */
+.section-wrap {
+  padding: 5rem 5vw;
+  border-bottom: 1px solid var(--rule);
+}
+.section-head {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 3.5rem;
+}
+.section-num {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  color: var(--muted-light);
+}
+.section-title {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: var(--navy);
+}
+
+/* SKILLS */
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+}
+.skill-card {
+  background: var(--white);
+  border: 1px solid var(--rule);
+  padding: 2rem 1.5rem;
+  transition: border-color 0.2s, transform 0.2s;
+}
+.skill-card:hover {
+  border-color: var(--blue-mid);
+  transform: translateY(-2px);
+}
+.skill-num {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  color: var(--blue-mid);
+  margin-bottom: 1.5rem;
+}
+.skill-card h3 {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--navy);
+  margin-bottom: 0.75rem;
+  letter-spacing: -0.01em;
+}
+.skill-card p {
+  font-size: 0.78rem;
+  color: var(--muted);
+  line-height: 1.75;
+  font-weight: 300;
+}
+
+/* TOOLS */
+.tools-rows { display: flex; flex-direction: column; }
+.tool-row {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 2rem;
+  padding: 1.25rem 0;
+  border-bottom: 1px solid var(--rule);
+  align-items: center;
+}
+.tool-row:last-child { border-bottom: none; }
+.tool-cat-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--blue-mid);
+}
+.tool-pills { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.tool-pill {
+  font-size: 0.78rem;
+  font-weight: 400;
+  padding: 0.4rem 0.9rem;
+  background: var(--white);
+  border: 1px solid var(--rule);
+  color: var(--navy);
+  transition: border-color 0.2s, background 0.2s;
+}
+.tool-pill:hover {
+  border-color: var(--blue-mid);
+  background: var(--blue-light);
+}
+
+/* TIMELINE */
+.tl-wrap { max-width: 800px; }
+.tl-entry {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 2rem;
+  padding: 2rem 0;
+  border-bottom: 1px solid var(--rule);
+}
+.tl-entry:last-child { border-bottom: none; }
+.tl-period {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.68rem;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+.tl-badge {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 500;
+  padding: 0.25rem 0.6rem;
+  display: inline-block;
+}
+.badge-work { background: var(--blue-light); color: var(--blue-mid); }
+.badge-edu  { background: #eaf3ee; color: #2a7a50; }
+.tl-title {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--navy);
+  margin-bottom: 0.25rem;
+  letter-spacing: -0.01em;
+}
+.tl-org {
+  font-size: 0.75rem;
+  color: var(--blue-mid);
+  margin-bottom: 0.75rem;
+}
+.tl-body {
+  font-size: 0.8rem;
+  color: var(--muted);
+  line-height: 1.75;
+  font-weight: 300;
+}
+
+/* SERVICES */
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+.svc-card {
+  background: var(--white);
+  border: 1px solid var(--rule);
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  transition: border-color 0.2s, transform 0.2s;
+}
+.svc-card:hover {
+  border-color: var(--blue-mid);
+  transform: translateY(-2px);
+}
+.svc-card.featured {
+  background: var(--navy);
+  border-color: var(--navy);
+}
+.svc-card.featured:hover { border-color: var(--blue-mid); }
+.svc-num {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.14em;
+  color: var(--muted-light);
+}
+.svc-card.featured .svc-num { color: rgba(255,255,255,0.3); }
+.svc-name {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--navy);
+  line-height: 1.3;
+}
+.svc-card.featured .svc-name { color: #fff; }
+.svc-desc {
+  font-size: 0.78rem;
+  color: var(--muted);
+  line-height: 1.8;
+  font-weight: 300;
+}
+.svc-card.featured .svc-desc { color: rgba(255,255,255,0.5); }
+.svc-includes { display: flex; flex-direction: column; gap: 0.4rem; padding-top: 0.75rem; border-top: 1px solid var(--rule); margin-top: 0.25rem; }
+.svc-card.featured .svc-includes { border-top-color: rgba(255,255,255,0.08); }
+.svc-includes span {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.62rem;
+  color: var(--muted);
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+.svc-includes span::before { content: '→'; color: var(--blue-mid); flex-shrink: 0; }
+.svc-card.featured .svc-includes span { color: rgba(255,255,255,0.45); }
+.svc-card.featured .svc-includes span::before { color: #6d9ef5; }
+.svc-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: auto;
+  padding-top: 1rem;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.06em;
+  color: var(--blue-mid);
+  text-decoration: none;
+}
+.svc-link:hover { text-decoration: underline; }
+.svc-card.featured .svc-link { color: #6d9ef5; }
+
+/* BLOG */
+.blog-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+.blog-card {
+  background: var(--white);
+  border: 1px solid var(--rule);
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.2s, transform 0.2s;
+}
+.blog-card:hover {
+  border-color: var(--blue-mid);
+  transform: translateY(-2px);
+}
+.blog-meta { display: flex; align-items: center; justify-content: space-between; }
+.blog-cat {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.25rem 0.6rem;
+  background: var(--blue-light);
+  color: var(--blue-mid);
+}
+.blog-date {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.6rem;
+  color: var(--muted-light);
+  letter-spacing: 0.04em;
+}
+.blog-title {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--navy);
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+}
+.blog-excerpt {
+  font-size: 0.75rem;
+  color: var(--muted);
+  line-height: 1.75;
+  font-weight: 300;
+}
+.blog-more {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.62rem;
+  color: var(--blue-mid);
+  margin-top: auto;
+  padding-top: 0.75rem;
+  letter-spacing: 0.06em;
+}
+
+/* CONTACT */
+.contact-wrap {
+  background: var(--navy);
+  padding: 6rem 5vw;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 4rem;
+  align-items: center;
+}
+.contact-h {
+  font-family: 'Unbounded', sans-serif;
+  font-size: clamp(1.8rem, 3vw, 3rem);
+  font-weight: 500;
+  color: #fff;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  margin-bottom: 1rem;
+}
+.contact-h span { color: #6d9ef5; }
+.contact-sub {
+  font-size: 0.88rem;
+  color: rgba(255,255,255,0.45);
+  font-weight: 300;
+  line-height: 1.7;
+}
+.contact-action {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: flex-end;
+}
+.contact-email {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 2rem;
+  background: var(--blue-mid);
+  color: #fff;
+  text-decoration: none;
+  font-family: 'Unbounded', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transition: background 0.2s;
+}
+.contact-email:hover { background: #4472e8; }
+.contact-email-addr {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.7rem;
+  color: rgba(255,255,255,0.4);
+  letter-spacing: 0.04em;
+}
+
+footer {
+  background: #080f1f;
+  padding: 1.75rem 5vw;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+footer p {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.62rem;
+  color: rgba(255,255,255,0.25);
+  letter-spacing: 0.06em;
+}
+
+@media(max-width:1024px){
+  .skills-grid { grid-template-columns: repeat(2,1fr); }
+  .services-grid { grid-template-columns: 1fr; }
+  .blog-grid { grid-template-columns: 1fr; }
+}
+@media(max-width:900px){
+  header { grid-template-columns: 1fr; padding: 6rem 5vw 3rem; }
+  .cert-panel { display: none; }
+  .metrics { flex-wrap: wrap; gap: 2rem; }
+  .contact-wrap { grid-template-columns: 1fr; }
+  .contact-action { align-items: flex-start; }
+  .tool-row { grid-template-columns: 1fr; gap: 0.75rem; }
+}
+@media(max-width:600px){
+  nav ul { display: none; }
+  .skills-grid { grid-template-columns: 1fr; }
+  .tl-entry { grid-template-columns: 1fr; gap: 0.5rem; }
+  footer { flex-direction: column; gap: 0.5rem; text-align: center; }
+}
+</style>
 </head>
 <body>
-    <div class="matrix-bg"></div>
-    
-    <nav>
-        <ul>
-            <li><a href="#about">./about</a></li>
-            <li><a href="#skills">./skills</a></li>
-            <li><a href="#contact">./contact</a></li>
-        </ul>
-    </nav>
 
-    <header id="about">
-        <div class="terminal-container">
-            <div class="terminal-header">
-                <div class="terminal-prompt typing-text">
-                    whoami > Altamish Arif | OSCP+ | CPTS | CBBH | Pentest+ | CCSE | eJPT
-                </div>
-            </div>
-            
-            <div class="terminal-content">
-                <div class="terminal-prompt">
-                    Specializing in offensive security and advanced penetration testing techniques.
-                </div>
-                
-                <div class="stats">
-                    <div class="stat-item">
-                        <a href="https://credentials.offsec.com/2fa793b3-2ff1-4773-b973-aedcf29627f7#acc.ngLJORCa" target="_blank">
-                            <img src="https://api.accredible.com/v1/frontend/credential_website_embed_image/badge/132249525" width="110" height="110">
-                        </a>
-                    </div>
-                    <div class="stat-item">
-                        <a href="https://www.credly.com/badges/702082ac-525d-4498-9b62-c0f7085f38b9/public_url" target="_blank">
-                            <img src="https://images.credly.com/size/680x680/images/46525b6b-c65b-45b4-ae45-420dba5af307/blob" width="110" height="110">
-                        </a>
-                    </div>
-                    <div class="stat-item">
-                        <a href="https://www.credly.com/badges/39f8346a-14d6-415a-95e5-a2108b12b97e/linked_in_profile" target="_blank">
-                            <img src="https://comptiacdn.azureedge.net/webcontent/images/default-source/siteicons/logopentestplus.svg?sfvrsn=ba95d8d6_10" width="110" height="110">
-                        </a>
-                    </div>
-                    <div class="stat-item">
-                        <a href="https://verified.elearnsecurity.com/certificates/fac1fdef-5f4e-4536-a18a-a2e5b53f2fb6" target="_blank">
-                            <img src="https://security.ine.com/wp-content/uploads/2023/08/eJPT-1.png" width="110" height="110">
-                        </a>
-                    </div>
-					<div class="stat-item">
-                        <a href="https://altamisharif.com/docs/certificate/ccse.pdf" target="_blank">
-                            <img src="https://ec-council-international.myshopify.com/cdn/shop/files/CCSE_d02b64ed-b793-4354-addd-b9315de40af2_540x.jpg" width="110" height="110">
-                        </a>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="skills-grid" id="skills">
-                <div class="skill-card">
-                    <i class="fas fa-terminal"></i>
-                    <h3>Network Penetration</h3>
-                    <p>Advanced exploitation of network vulnerabilities and post-exploitation techniques.</p>
-                </div>
-                <div class="skill-card">
-                    <i class="fas fa-code"></i>
-                    <h3>Web Application Security</h3>
-                    <p>OWASP Top 10 testing, custom exploit development, and secure coding practices.</p>
-                </div>
-                <div class="skill-card">
-                    <i class="fas fa-mobile-alt"></i> <!-- Icon for mobile security -->
-                    <h3>Mobile Application Security</h3>
-                    <p>Analysis of mobile app vulnerabilities, reverse engineering, and secure coding for iOS and Android.</p>
-                </div>
-                <div class="skill-card">
-                    <i class="fas fa-microchip"></i>
-                    <h3>Hardware Security Assessment</h3>
-                    <p>Evaluation of hardware vulnerabilities, firmware analysis, and physical security testing.</p>
-                </div>
-            </div>
-            
-            <div class="cta-section" id="contact">
-                <h2>Got something in mind?</h2>
-                <p>Let's have a chat.</p>
-                <a href="mailto:altamish1994@gmail.com" class="cta-button">> Initialize Connection</a>
-            </div>
-        </div>
-    </header>
+<nav>
+  <div class="nav-brand">
+    <div class="nav-logo">Altamish Arif</div>
+    <span class="nav-badge">OSCP+</span>
+  </div>
+  <ul>
+    <li><a href="#about">About</a></li>
+    <li><a href="#skills">Expertise</a></li>
+    <li><a href="#tools">Tools</a></li>
+    <li><a href="#timeline">Experience</a></li>
+    <li><a href="#services">Services</a></li>
+    <li><a href="#writing">Writing</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<header id="about">
+  <div>
+    <div class="hero-eyebrow">Penetration Tester · Red Team</div>
+    <h1 class="hero-h1">Advanced<br><span>Offensive</span><br>Security.</h1>
+    <p class="hero-sub">I find the attack paths before adversaries do. Specialising in penetration testing, red team operations, and vulnerability research across enterprise environments.</p>
+    <div class="tag-row">
+      <span class="tag">OSCP+</span>
+      <span class="tag">HTB CPTS</span>
+      <span class="tag">CBBH</span>
+      <span class="tag">Pentest+</span>
+      <span class="tag">CCSE</span>
+      <span class="tag">eJPT</span>
+    </div>
+    <a href="mailto:altamish1994@gmail.com" class="hero-cta">Contact Me →</a>
+  </div>
+
+  <div class="cert-panel">
+    <div class="cert-panel-header">Verified Credentials</div>
+    <a href="https://credentials.offsec.com/2fa793b3-2ff1-4773-b973-aedcf29627f7#acc.ngLJORCa" target="_blank" class="cert-entry">
+      <img src="https://api.accredible.com/v1/frontend/credential_website_embed_image/badge/132249525" alt="OSCP+">
+      <div><div class="cert-entry-name">OSCP+</div><div class="cert-entry-issuer">OffSec / Offensive Security</div></div>
+    </a>
+    <a href="https://www.credly.com/badges/c8ea8f00-ed06-407e-8dda-ca7363fb98bf/public_url" target="_blank" class="cert-entry">
+      <img src="https://images.credly.com/images/e63aa507-b974-4e67-bae6-1e425f6e2a99/linkedin_thumb_image.png" alt="HTB CPTS">
+      <div><div class="cert-entry-name">HTB CPTS</div><div class="cert-entry-issuer">Hack The Box</div></div>
+    </a>
+    <a href="https://www.credly.com/badges/702082ac-525d-4498-9b62-c0f7085f38b9/public_url" target="_blank" class="cert-entry">
+      <img src="https://images.credly.com/size/680x680/images/46525b6b-c65b-45b4-ae45-420dba5af307/blob" alt="CBBH">
+      <div><div class="cert-entry-name">CBBH</div><div class="cert-entry-issuer">Hack The Box</div></div>
+    </a>
+    <a href="https://www.credly.com/badges/39f8346a-14d6-415a-95e5-a2108b12b97e/linked_in_profile" target="_blank" class="cert-entry">
+      <img src="https://comptiacdn.azureedge.net/webcontent/images/default-source/siteicons/logopentestplus.svg?sfvrsn=ba95d8d6_10" alt="Pentest+">
+      <div><div class="cert-entry-name">Pentest+</div><div class="cert-entry-issuer">CompTIA</div></div>
+    </a>
+    <a href="https://altamish1994.github.io/docs/images/ejpt_certificate.pdf" target="_blank" class="cert-entry">
+      <img src="https://raw.githubusercontent.com/altamish1994/altamish1994.github.io/main/docs/images/ejpt-certification.svg" alt="eJPT">
+      <div><div class="cert-entry-name">eJPT</div><div class="cert-entry-issuer">eLearnSecurity / INE</div></div>
+    </a>
+    <a href="https://altamisharif.com/docs/certificate/ccse.pdf" target="_blank" class="cert-entry">
+      <img src="https://ec-council-international.myshopify.com/cdn/shop/files/CCSE_d02b64ed-b793-4354-addd-b9315de40af2_540x.jpg" alt="CCSE">
+      <div><div class="cert-entry-name">CCSE</div><div class="cert-entry-issuer">EC-Council</div></div>
+    </a>
+  </div>
+</header>
+
+<!-- METRICS -->
+<div class="metrics">
+  <div class="metric">
+    <div class="metric-num">6</div>
+    <div class="metric-label">Active Certifications</div>
+  </div>
+  <div class="metrics-divider"></div>
+  <div class="metric">
+    <div class="metric-num">8+</div>
+    <div class="metric-label">Years Experience</div>
+  </div>
+  <div class="metrics-divider"></div>
+  <div class="metric">
+    <div class="metric-num">OSCP+</div>
+    <div class="metric-label">Top Credential</div>
+  </div>
+  <div class="metrics-divider"></div>
+  <div class="metric">
+    <div class="metric-num">4</div>
+    <div class="metric-label">Specialist Domains</div>
+  </div>
+</div>
+
+<!-- EXPERTISE -->
+<div class="section-wrap" id="skills">
+  <div class="section-head">
+    <span class="section-num">01</span>
+    <h2 class="section-title">Areas of Expertise</h2>
+  </div>
+  <div class="skills-grid">
+    <div class="skill-card">
+      <div class="skill-num">01</div>
+      <h3>Network Penetration Testing</h3>
+      <p>Advanced exploitation across enterprise networks. Lateral movement, privilege escalation, Active Directory attacks, and domain compromise.</p>
+    </div>
+    <div class="skill-card">
+      <div class="skill-num">02</div>
+      <h3>Web Application Security</h3>
+      <p>OWASP Top 10 and beyond. Business logic flaws, API security, authentication bypass, and custom exploit development across modern stacks.</p>
+    </div>
+    <div class="skill-card">
+      <div class="skill-num">03</div>
+      <h3>Mobile Application Security</h3>
+      <p>iOS and Android assessment. Static and dynamic analysis, reverse engineering, and runtime manipulation techniques.</p>
+    </div>
+    <div class="skill-card">
+      <div class="skill-num">04</div>
+      <h3>Hardware Security</h3>
+      <p>Firmware analysis, JTAG/UART interfaces, physical security testing, and embedded system vulnerability assessment.</p>
+    </div>
+  </div>
+</div>
+
+<!-- TOOLS -->
+<div class="section-wrap" id="tools">
+  <div class="section-head">
+    <span class="section-num">02</span>
+    <h2 class="section-title">Tools & Tech Stack</h2>
+  </div>
+  <div class="tools-rows">
+    <div class="tool-row">
+      <div class="tool-cat-label">Exploitation</div>
+      <div class="tool-pills">
+        <span class="tool-pill">Metasploit</span>
+        <span class="tool-pill">Cobalt Strike</span>
+        <span class="tool-pill">SQLmap</span>
+        <span class="tool-pill">Impacket</span>
+      </div>
+    </div>
+    <div class="tool-row">
+      <div class="tool-cat-label">Web & API</div>
+      <div class="tool-pills">
+        <span class="tool-pill">Burp Suite Pro</span>
+        <span class="tool-pill">ffuf</span>
+        <span class="tool-pill">Nikto</span>
+        <span class="tool-pill">OWASP ZAP</span>
+      </div>
+    </div>
+    <div class="tool-row">
+      <div class="tool-cat-label">Recon & OSINT</div>
+      <div class="tool-pills">
+        <span class="tool-pill">Nmap</span>
+        <span class="tool-pill">Maltego</span>
+        <span class="tool-pill">Shodan</span>
+        <span class="tool-pill">Amass</span>
+        <span class="tool-pill">Recon-ng</span>
+      </div>
+    </div>
+    <div class="tool-row">
+      <div class="tool-cat-label">Active Directory</div>
+      <div class="tool-pills">
+        <span class="tool-pill">BloodHound</span>
+        <span class="tool-pill">Rubeus</span>
+        <span class="tool-pill">CrackMapExec</span>
+        <span class="tool-pill">Mimikatz</span>
+      </div>
+    </div>
+    <div class="tool-row">
+      <div class="tool-cat-label">Mobile</div>
+      <div class="tool-pills">
+        <span class="tool-pill">Frida</span>
+        <span class="tool-pill">MobSF</span>
+        <span class="tool-pill">apktool</span>
+        <span class="tool-pill">jadx</span>
+        <span class="tool-pill">objection</span>
+      </div>
+    </div>
+    <div class="tool-row">
+      <div class="tool-cat-label">Password</div>
+      <div class="tool-pills">
+        <span class="tool-pill">Hashcat</span>
+        <span class="tool-pill">John the Ripper</span>
+        <span class="tool-pill">Hydra</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- EXPERIENCE -->
+<div class="section-wrap" id="timeline">
+  <div class="section-head">
+    <span class="section-num">03</span>
+    <h2 class="section-title">Experience & Education</h2>
+  </div>
+  <div class="tl-wrap">
+    <div class="tl-entry">
+      <div class="tl-left">
+        <span class="tl-period">2022 — Present</span>
+        <span class="tl-badge badge-work">Current</span>
+      </div>
+      <div class="tl-right">
+        <div class="tl-title">Cyber Security Engineer</div>
+        <div class="tl-org">Confidential</div>
+        <div class="tl-body">Leading penetration testing engagements and security assessments for enterprise clients. Full-scope red team operations from external reconnaissance through domain compromise, with commercial-grade reports and actionable remediation guidance.</div>
+      </div>
+    </div>
+    <div class="tl-entry">
+      <div class="tl-left">
+        <span class="tl-period">2020 — 2022</span>
+        <span class="tl-badge badge-work">FT</span>
+      </div>
+      <div class="tl-right">
+        <div class="tl-title">Cyber Security Engineer</div>
+        <div class="tl-org">Netsol Technologies</div>
+        <div class="tl-body">Network and web application penetration testing, vulnerability assessments, and security audits. Developed internal security tooling and strengthened the security posture of enterprise fintech products across international markets.</div>
+      </div>
+    </div>
+    <div class="tl-entry">
+      <div class="tl-left">
+        <span class="tl-period">2018 — 2020</span>
+        <span class="tl-badge badge-edu">MSc</span>
+      </div>
+      <div class="tl-right">
+        <div class="tl-title">Masters in Cybersecurity</div>
+        <div class="tl-org">Graduate Studies</div>
+        <div class="tl-body">Advanced postgraduate study in network security, cryptography, digital forensics, and offensive security methodologies. The structured bridge from software engineering into a career in offensive security.</div>
+      </div>
+    </div>
+    <div class="tl-entry">
+      <div class="tl-left">
+        <span class="tl-period">2016 — 2018</span>
+        <span class="tl-badge badge-work">FT</span>
+      </div>
+      <div class="tl-right">
+        <div class="tl-title">Software Engineer</div>
+        <div class="tl-org">Industry</div>
+        <div class="tl-body">Full-stack software development with deep expertise in application architecture, APIs, and development lifecycles — knowledge that now directly informs application security assessment and exploit development work.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SERVICES -->
+<div class="section-wrap" id="services">
+  <div class="section-head">
+    <span class="section-num">04</span>
+    <h2 class="section-title">Services & Engagements</h2>
+  </div>
+  <div class="services-grid">
+    <div class="svc-card">
+      <div class="svc-num">01</div>
+      <div class="svc-name">Web Application Pentest</div>
+      <div class="svc-desc">Full OWASP Top 10 assessment, business logic testing, API security review, and authenticated and unauthenticated testing.</div>
+      <div class="svc-includes">
+        <span>Scope definition & recon</span>
+        <span>Manual & automated testing</span>
+        <span>Proof-of-concept exploits</span>
+        <span>Detailed remediation report</span>
+      </div>
+      <a href="mailto:altamish1994@gmail.com" class="svc-link">Enquire →</a>
+    </div>
+    <div class="svc-card featured">
+      <div class="svc-num">02 · Most Requested</div>
+      <div class="svc-name">Network Penetration Test</div>
+      <div class="svc-desc">External and internal network assessment through to domain compromise. Full kill-chain documentation and executive summary.</div>
+      <div class="svc-includes">
+        <span>External & internal scope</span>
+        <span>AD & lateral movement</span>
+        <span>Kill-chain documentation</span>
+        <span>Executive summary</span>
+      </div>
+      <a href="mailto:altamish1994@gmail.com" class="svc-link">Enquire →</a>
+    </div>
+    <div class="svc-card">
+      <div class="svc-num">03</div>
+      <div class="svc-name">Red Team Operation</div>
+      <div class="svc-desc">Adversary simulation with real-world TTPs across physical, digital, and social engineering vectors to test detection and response.</div>
+      <div class="svc-includes">
+        <span>Custom threat scenarios</span>
+        <span>Physical access attempts</span>
+        <span>Social engineering</span>
+        <span>Purple team debrief</span>
+      </div>
+      <a href="mailto:altamish1994@gmail.com" class="svc-link">Enquire →</a>
+    </div>
+  </div>
+</div>
+
+<!-- WRITING -->
+<div class="section-wrap" id="writing">
+  <div class="section-head">
+    <span class="section-num">05</span>
+    <h2 class="section-title">Writeups & Research</h2>
+  </div>
+  <div class="blog-grid">
+    <a href="#" class="blog-card">
+      <div class="blog-meta">
+        <span class="blog-cat">HTB Writeup</span>
+        <span class="blog-date">2024</span>
+      </div>
+      <div class="blog-title">Active Directory — From User to Domain Admin</div>
+      <div class="blog-excerpt">Chaining Kerberoasting, AS-REP roasting, and DCSync for full domain compromise in a complex enterprise AD environment.</div>
+      <div class="blog-more">Read writeup →</div>
+    </a>
+    <a href="#" class="blog-card">
+      <div class="blog-meta">
+        <span class="blog-cat">Research</span>
+        <span class="blog-date">2024</span>
+      </div>
+      <div class="blog-title">Bypassing Modern WAFs with Custom Payload Encoding</div>
+      <div class="blog-excerpt">Evading web application firewalls using encoding chains, HTTP request smuggling, and parameter pollution techniques.</div>
+      <div class="blog-more">Read writeup →</div>
+    </a>
+    <a href="#" class="blog-card">
+      <div class="blog-meta">
+        <span class="blog-cat">Mobile</span>
+        <span class="blog-date">2023</span>
+      </div>
+      <div class="blog-title">Certificate Pinning Bypass on Android — A Practical Guide</div>
+      <div class="blog-excerpt">Using Frida to hook SSL validation functions and intercept traffic from certificate-pinned Android applications.</div>
+      <div class="blog-more">Read writeup →</div>
+    </a>
+  </div>
+</div>
+
+<!-- CONTACT -->
+<div class="contact-wrap" id="contact">
+  <div>
+    <h2 class="contact-h">Let's discuss your <span>security posture.</span></h2>
+    <p class="contact-sub">Available for penetration testing engagements, red team consulting, and security advisory work. Enterprise clients welcome.</p>
+  </div>
+  <div class="contact-action">
+    <a href="mailto:altamish1994@gmail.com" class="contact-email">Send Message →</a>
+    <span class="contact-email-addr">altamish1994@gmail.com</span>
+  </div>
+</div>
+
+<footer>
+  <p>© 2026 Altamish Arif · Penetration Tester</p>
+  <p>OSCP+ · HTB CPTS · CBBH · Pentest+ · CCSE · eJPT</p>
+</footer>
+
 </body>
 </html>

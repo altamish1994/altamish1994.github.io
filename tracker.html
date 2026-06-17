@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HTB Study Runway — 3 Paths to 12 Nov</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800&family=Epilogue:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0B1F2A; --navy:#13293D; --blue:#2D6CF6; --blue-d:#1E4FB8;
+  --paper:#F6F8FC; --card:#FFFFFF; --line:#E4EAF3; --muted:#5B6B7C;
+  --done:#16A34A; --prog:#D97706; --block:#DC2626; --none:#94A3B8;
+  --web:#1F4E5F; --ai:#6A4C93; --wifi:#C1666B;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Epilogue',system-ui,sans-serif;background:var(--paper);color:var(--ink);
+  line-height:1.5;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+.mono{font-family:'IBM Plex Mono',monospace}
+
+/* ---- header ---- */
+header{background:linear-gradient(160deg,var(--navy) 0%,var(--ink) 100%);color:#fff;padding:54px 0 0}
+.eyebrow{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.22em;text-transform:uppercase;
+  color:#8FB3FF;margin-bottom:14px}
+h1{font-family:'Unbounded',sans-serif;font-weight:800;font-size:clamp(28px,4.4vw,46px);line-height:1.04;
+  letter-spacing:-.01em;max-width:18ch}
+.sub{color:#B9C7D8;margin-top:16px;max-width:62ch;font-size:15.5px}
+
+/* ---- hero metric ---- */
+.hero{display:grid;grid-template-columns:1.1fr 1fr;gap:30px;align-items:end;margin-top:40px;padding-bottom:34px}
+.bignum{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:clamp(56px,11vw,104px);
+  line-height:.9;letter-spacing:-.03em}
+.bignum .unit{font-size:.28em;color:#8FB3FF;letter-spacing:.04em}
+.heroLabel{font-family:'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:.18em;
+  font-size:12px;color:#8FB3FF;margin-bottom:10px}
+.verdict{font-weight:600;font-size:16px;margin-top:14px;display:inline-flex;align-items:center;gap:9px;
+  padding:8px 14px;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14)}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--none)}
+
+/* ---- runway ---- */
+.runwayBox{padding:0 0 6px}
+.runway{position:relative;height:64px;margin-top:8px}
+.track{position:absolute;top:30px;left:0;right:0;height:6px;border-radius:6px;background:rgba(255,255,255,.13)}
+.fill{position:absolute;top:30px;left:0;height:6px;border-radius:6px;
+  background:linear-gradient(90deg,var(--blue),#7FA8FF)}
+.tick{position:absolute;top:20px;width:2px;height:26px;background:rgba(255,255,255,.5)}
+.tick.deadline{background:#FF7A7A;height:34px;top:16px}
+.tick.planned{background:#7FE3C0}
+.tlabel{position:absolute;top:0;font-family:'IBM Plex Mono',monospace;font-size:10px;
+  color:#A9BBD0;transform:translateX(-50%);white-space:nowrap}
+.marker{position:absolute;top:24px;transform:translateX(-50%);z-index:3}
+.marker .pin{width:14px;height:14px;border-radius:50%;background:#fff;border:3px solid var(--blue);
+  box-shadow:0 0 0 4px rgba(45,108,246,.25)}
+.marker .ptxt{font-family:'IBM Plex Mono',monospace;font-size:10px;color:#fff;margin-top:6px;
+  transform:translateX(-50%);position:absolute;left:50%;white-space:nowrap}
+
+/* ---- stat strip ---- */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);
+  border:1px solid var(--line);border-radius:14px;overflow:hidden;margin:-26px 0 0;position:relative;z-index:5;
+  box-shadow:0 18px 40px -24px rgba(11,31,42,.4)}
+.stat{background:var(--card);padding:20px 18px}
+.stat .k{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.stat .v{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:30px;margin-top:6px;letter-spacing:-.02em}
+.stat .v small{font-size:14px;color:var(--muted);font-weight:400}
+.bar{height:5px;border-radius:5px;background:var(--line);margin-top:12px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--blue);width:0;transition:width .5s ease}
+
+/* ---- controls ---- */
+.toolbar{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin:46px 0 18px}
+.toolbar h2{font-family:'Unbounded',sans-serif;font-weight:600;font-size:20px}
+.btn{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.06em;cursor:pointer;
+  border:1px solid var(--line);background:#fff;color:var(--muted);padding:9px 14px;border-radius:9px;transition:.15s}
+.btn:hover{border-color:var(--blue);color:var(--blue)}
+
+/* ---- phase + table ---- */
+.phase{margin-top:30px;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:#fff}
+.phaseHead{display:flex;align-items:center;gap:14px;padding:16px 20px;color:#fff}
+.phaseHead .pno{font-family:'IBM Plex Mono',monospace;font-size:12px;opacity:.8;letter-spacing:.1em}
+.phaseHead .ptitle{font-family:'Unbounded',sans-serif;font-weight:600;font-size:16px}
+.phaseHead .pmeta{margin-left:auto;font-family:'IBM Plex Mono',monospace;font-size:12px;opacity:.92}
+.scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:780px}
+th,td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--line);font-size:13.5px;vertical-align:middle}
+th{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted);font-weight:500;background:#FBFCFE;position:sticky;top:0}
+td.mono,th.mono{font-family:'IBM Plex Mono',monospace}
+tr:last-child td{border-bottom:none}
+.modname{font-weight:600}
+.diff{font-family:'IBM Plex Mono',monospace;font-size:10.5px;padding:2px 7px;border-radius:5px;letter-spacing:.04em}
+.diff.Medium{background:#EAF1FF;color:var(--blue-d)}
+.diff.Hard{background:#FBE9E7;color:#B53D2E}
+.center{text-align:center}
+select.status{font-family:'IBM Plex Mono',monospace;font-size:12px;border:1px solid var(--line);border-radius:7px;
+  padding:5px 8px;background:#fff;cursor:pointer;color:var(--ink)}
+input[type=date],input[type=number]{font-family:'IBM Plex Mono',monospace;font-size:12px;border:1px solid var(--line);
+  border-radius:7px;padding:5px 7px;width:100%;color:var(--ink);background:#fff}
+input[type=number]{width:62px}
+tr[data-st="Done"]{background:#F2FBF5}
+tr[data-st="In Progress"]{background:#FFFBF0}
+tr[data-st="Blocked"]{background:#FEF4F4}
+.var{font-family:'IBM Plex Mono',monospace;font-weight:600;text-align:center}
+.var.pos{color:var(--done)} .var.neg{color:var(--block)}
+.note{font-size:11px;color:#9C5700;font-style:italic;margin-top:4px;display:block;max-width:30ch}
+
+/* ---- callout ---- */
+.callout{margin:42px 0 0;border:1px solid var(--line);border-left:4px solid var(--blue);border-radius:12px;
+  background:#fff;padding:22px 24px}
+.callout h3{font-family:'Unbounded',sans-serif;font-weight:600;font-size:15px;margin-bottom:10px}
+.callout.warn{border-left-color:var(--block)}
+.callout p{font-size:14px;color:#33424F;margin-bottom:8px}
+.callout strong{color:var(--ink)}
+footer{color:var(--muted);font-size:12px;text-align:center;padding:46px 0 40px;font-family:'IBM Plex Mono',monospace}
+
+@media(max-width:760px){
+  .hero{grid-template-columns:1fr;gap:24px}
+  .stats{grid-template-columns:repeat(2,1fr)}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="eyebrow">HTB Academy · 16 Jun → 12 Nov 2026</div>
+    <h1>Three paths. One subscription clock.</h1>
+    <p class="sub">Senior Web Pentester (CWEE) → AI Red Teamer (COAE) → Wi-Fi Pentester (CWPE). 37 modules, 645 sections, paced at 6 sections a study-day, six days a week. The number that matters isn't progress — it's how much runway is left before the subscription ends.</p>
+
+    <div class="hero">
+      <div>
+        <div class="heroLabel">Days under / over the deadline</div>
+        <div class="bignum" id="heroNum">—<span class="unit"> days</span></div>
+        <div class="verdict" id="verdict"><span class="dot" id="vdot"></span><span id="vtext">Log your first finish to start tracking</span></div>
+      </div>
+      <div class="runwayBox">
+        <div class="heroLabel">Runway</div>
+        <div class="runway" id="runway"></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="stats">
+    <div class="stat"><div class="k">Modules done</div><div class="v"><span id="mDone">0</span><small> / 37</small></div><div class="bar"><i id="mBar"></i></div></div>
+    <div class="stat"><div class="k">Sections done</div><div class="v"><span id="sDone">0</span><small> / 645</small></div><div class="bar"><i id="sBar"></i></div></div>
+    <div class="stat"><div class="k">Ahead(+)/behind(−) plan</div><div class="v" id="standing">—</div></div>
+    <div class="stat"><div class="k">Req. pace from today</div><div class="v" id="reqPace">—<small> /day</small></div></div>
+  </div>
+
+  <div class="toolbar">
+    <div style="display:flex;align-items:baseline;gap:14px">
+      <h2>Module tracker</h2>
+      <span id="syncBadge" class="mono" style="font-size:12px;color:var(--muted)"></span>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn" id="exportBtn">Export progress</button>
+      <button class="btn" id="importBtn">Import progress</button>
+      <button class="btn" id="resetBtn">Reset all progress</button>
+      <input type="file" id="importFile" accept="application/json" style="display:none">
+    </div>
+  </div>
+
+  <div id="phases"></div>
+
+  <div class="callout">
+    <h3>How this works</h3>
+    <p>Set a module's <strong>Status</strong> to Done, then fill in the <strong>Actual Done</strong> date and <strong>Actual Days</strong> you spent. The page recomputes the <strong>+/− vs target</strong> for that module and the headline runway number. Everything saves in this browser automatically — no account, no server.</p>
+    <p>The headline reads from your <em>most recent</em> finish: positive means days of buffer still in hand before 12 Nov, negative means you'll overrun by that many days.</p>
+  </div>
+
+  <div class="callout warn">
+    <h3>Kill switch</h3>
+    <p>If the runway goes negative and you can't claw it back inside a week, <strong>cut Wi-Fi, not Web.</strong> CWEE is the hardest to rush and the most valuable to your offensive-security brand; CWPE is the shortest and most self-contained.</p>
+    <p>Two structural risks the dates can't fix: the flat 6-sections/day pace treats a CWEE whitebox exploit-dev section like an AI reading — it isn't, so guard the buffer. And this whole schedule assumes a 16 Jun start with CAPE already cleared off your plate.</p>
+  </div>
+
+  <footer id="foot">Static page · progress saved in this browser only · use Export/Import to move it between devices</footer>
+</div>
+
+<script>
+const DATA = {
+"meta": {
+"total": 645,
+"pace": 6,
+"deadline": "2026-11-12",
+"plannedFinal": "2026-10-19",
+"startDate": "2026-06-16",
+"checkpoints": {
+"Web": "2026-08-01",
+"AI": "2026-09-16",
+"Wi-Fi": "2026-10-19"
+},
+"counts": {
+"Web": [
+15,
+245
+],
+"AI": [
+12,
+230
+],
+"Wi-Fi": [
+10,
+170
+]
+}
+},
+"mods": [
+{
+"path": "Web",
+"idx": 1,
+"module": "Injection Attacks",
+"diff": "Medium",
+"sections": 15,
+"est": 3,
+"start": "2026-06-16",
+"target": "2026-06-18"
+},
+{
+"path": "Web",
+"idx": 2,
+"module": "Introduction to NoSQL Injection",
+"diff": "Medium",
+"sections": 12,
+"est": 2,
+"start": "2026-06-18",
+"target": "2026-06-20"
+},
+{
+"path": "Web",
+"idx": 3,
+"module": "Attacking Authentication Mechanisms",
+"diff": "Medium",
+"sections": 20,
+"est": 4,
+"start": "2026-06-20",
+"target": "2026-06-24"
+},
+{
+"path": "Web",
+"idx": 4,
+"module": "Advanced XSS and CSRF Exploitation",
+"diff": "Medium",
+"sections": 17,
+"est": 3,
+"start": "2026-06-24",
+"target": "2026-06-27"
+},
+{
+"path": "Web",
+"idx": 5,
+"module": "HTTPs/TLS Attacks",
+"diff": "Medium",
+"sections": 15,
+"est": 3,
+"start": "2026-06-27",
+"target": "2026-07-01"
+},
+{
+"path": "Web",
+"idx": 6,
+"module": "Abusing HTTP Misconfigurations",
+"diff": "Hard",
+"sections": 20,
+"est": 4,
+"start": "2026-07-01",
+"target": "2026-07-04"
+},
+{
+"path": "Web",
+"idx": 7,
+"module": "HTTP Attacks",
+"diff": "Hard",
+"sections": 18,
+"est": 3,
+"start": "2026-07-04",
+"target": "2026-07-08"
+},
+{
+"path": "Web",
+"idx": 8,
+"module": "Blind SQL Injection",
+"diff": "Hard",
+"sections": 16,
+"est": 3,
+"start": "2026-07-08",
+"target": "2026-07-11"
+},
+{
+"path": "Web",
+"idx": 9,
+"module": "Intro to Whitebox Pentesting",
+"diff": "Hard",
+"sections": 18,
+"est": 3,
+"start": "2026-07-11",
+"target": "2026-07-15"
+},
+{
+"path": "Web",
+"idx": 10,
+"module": "Modern Web Exploitation Techniques",
+"diff": "Hard",
+"sections": 18,
+"est": 3,
+"start": "2026-07-15",
+"target": "2026-07-18"
+},
+{
+"path": "Web",
+"idx": 11,
+"module": "Introduction to Deserialization Attacks",
+"diff": "Hard",
+"sections": 15,
+"est": 3,
+"start": "2026-07-18",
+"target": "2026-07-21"
+},
+{
+"path": "Web",
+"idx": 12,
+"module": "Whitebox Attacks",
+"diff": "Hard",
+"sections": 15,
+"est": 3,
+"start": "2026-07-21",
+"target": "2026-07-24"
+},
+{
+"path": "Web",
+"idx": 13,
+"module": "Advanced SQL Injections",
+"diff": "Hard",
+"sections": 12,
+"est": 2,
+"start": "2026-07-24",
+"target": "2026-07-27"
+},
+{
+"path": "Web",
+"idx": 14,
+"module": "Advanced Deserialization Attacks",
+"diff": "Hard",
+"sections": 13,
+"est": 3,
+"start": "2026-07-27",
+"target": "2026-07-29"
+},
+{
+"path": "Web",
+"idx": 15,
+"module": "Parameter Logic Bugs",
+"diff": "Hard",
+"sections": 21,
+"est": 4,
+"start": "2026-07-29",
+"target": "2026-08-01"
+},
+{
+"path": "AI",
+"idx": 16,
+"module": "Fundamentals of AI",
+"diff": "Medium",
+"sections": 24,
+"est": 4,
+"start": "2026-08-01",
+"target": "2026-08-06"
+},
+{
+"path": "AI",
+"idx": 17,
+"module": "Applications of AI in InfoSec",
+"diff": "Medium",
+"sections": 25,
+"est": 5,
+"start": "2026-08-06",
+"target": "2026-08-11"
+},
+{
+"path": "AI",
+"idx": 18,
+"module": "Introduction to Red Teaming AI",
+"diff": "Medium",
+"sections": 11,
+"est": 2,
+"start": "2026-08-12",
+"target": "2026-08-13"
+},
+{
+"path": "AI",
+"idx": 19,
+"module": "Prompt Injection Attacks",
+"diff": "Medium",
+"sections": 12,
+"est": 2,
+"start": "2026-08-13",
+"target": "2026-08-15"
+},
+{
+"path": "AI",
+"idx": 20,
+"module": "LLM Output Attacks",
+"diff": "Medium",
+"sections": 14,
+"est": 3,
+"start": "2026-08-15",
+"target": "2026-08-19"
+},
+{
+"path": "AI",
+"idx": 21,
+"module": "AI Data Attacks",
+"diff": "Hard",
+"sections": 25,
+"est": 5,
+"start": "2026-08-19",
+"target": "2026-08-24"
+},
+{
+"path": "AI",
+"idx": 22,
+"module": "Attacking AI - Application and System",
+"diff": "Medium",
+"sections": 14,
+"est": 3,
+"start": "2026-08-24",
+"target": "2026-08-26"
+},
+{
+"path": "AI",
+"idx": 23,
+"module": "AI Evasion - Foundations",
+"diff": "Medium",
+"sections": 12,
+"est": 2,
+"start": "2026-08-26",
+"target": "2026-08-28"
+},
+{
+"path": "AI",
+"idx": 24,
+"module": "AI Evasion - First-Order Attacks",
+"diff": "Hard",
+"sections": 23,
+"est": 4,
+"start": "2026-08-28",
+"target": "2026-09-02"
+},
+{
+"path": "AI",
+"idx": 25,
+"module": "AI Evasion - Sparsity Attacks",
+"diff": "Hard",
+"sections": 28,
+"est": 5,
+"start": "2026-09-02",
+"target": "2026-09-08"
+},
+{
+"path": "AI",
+"idx": 26,
+"module": "AI Privacy",
+"diff": "Medium",
+"sections": 21,
+"est": 4,
+"start": "2026-09-08",
+"target": "2026-09-11"
+},
+{
+"path": "AI",
+"idx": 27,
+"module": "AI Defense",
+"diff": "Medium",
+"sections": 21,
+"est": 4,
+"start": "2026-09-11",
+"target": "2026-09-16"
+},
+{
+"path": "Wi-Fi",
+"idx": 28,
+"module": "Wi-Fi Penetration Testing Basics",
+"diff": "Medium",
+"sections": 16,
+"est": 3,
+"start": "2026-09-16",
+"target": "2026-09-18"
+},
+{
+"path": "Wi-Fi",
+"idx": 29,
+"module": "Attacking Wi-Fi Protected Setup (WPS)",
+"diff": "Medium",
+"sections": 13,
+"est": 3,
+"start": "2026-09-18",
+"target": "2026-09-21"
+},
+{
+"path": "Wi-Fi",
+"idx": 30,
+"module": "Wired Equivalent Privacy (WEP) Attacks",
+"diff": "Medium",
+"sections": 13,
+"est": 3,
+"start": "2026-09-22",
+"target": "2026-09-24"
+},
+{
+"path": "Wi-Fi",
+"idx": 31,
+"module": "Attacking WPA/WPA2 Wi-Fi Networks",
+"diff": "Medium",
+"sections": 15,
+"est": 3,
+"start": "2026-09-24",
+"target": "2026-09-26"
+},
+{
+"path": "Wi-Fi",
+"idx": 32,
+"module": "Wi-Fi Evil Twin Attacks",
+"diff": "Medium",
+"sections": 16,
+"est": 3,
+"start": "2026-09-26",
+"target": "2026-09-30"
+},
+{
+"path": "Wi-Fi",
+"idx": 33,
+"module": "Attacking WPA3 Wi-Fi Networks",
+"diff": "Medium",
+"sections": 16,
+"est": 3,
+"start": "2026-09-30",
+"target": "2026-10-02"
+},
+{
+"path": "Wi-Fi",
+"idx": 34,
+"module": "Bypassing Wi-Fi Captive Portals",
+"diff": "Medium",
+"sections": 17,
+"est": 3,
+"start": "2026-10-03",
+"target": "2026-10-06"
+},
+{
+"path": "Wi-Fi",
+"idx": 35,
+"module": "Wi-Fi Password Cracking Techniques",
+"diff": "Medium",
+"sections": 16,
+"est": 3,
+"start": "2026-10-06",
+"target": "2026-10-09"
+},
+{
+"path": "Wi-Fi",
+"idx": 36,
+"module": "Wi-Fi Penetration Testing Tools and Techniques",
+"diff": "Medium",
+"sections": 30,
+"est": 5,
+"start": "2026-10-09",
+"target": "2026-10-15"
+},
+{
+"path": "Wi-Fi",
+"idx": 37,
+"module": "Attacking Corporate Wi-Fi Networks",
+"diff": "Medium",
+"sections": 18,
+"est": 3,
+"start": "2026-10-15",
+"target": "2026-10-19"
+}
+]
+};
+const M = DATA.meta, MODS = DATA.mods;
+const PHASES = {
+  "Web":{no:"01",title:"Senior Web Penetration Tester",cert:"CWEE",color:"var(--web)"},
+  "AI":{no:"02",title:"AI Red Teamer",cert:"COAE",color:"var(--ai)"},
+  "Wi-Fi":{no:"03",title:"Wi-Fi Penetration Tester",cert:"CWPE",color:"var(--wifi)"}
+};
+const NOTES = {
+ "Wi-Fi Penetration Testing Basics":"Hardware: monitor-mode + injection adapter ready before this phase. Order ~2 wks early.",
+ "Parameter Logic Bugs":"End of CWEE — phase-1 checkpoint.",
+ "AI Defense":"End of COAE — phase-2 checkpoint.",
+ "Attacking Corporate Wi-Fi Networks":"Final module — all 3 paths complete here.",
+ "Applications of AI in InfoSec":"Set up Miniconda + JupyterLab; reused later."
+};
+const KEY="htb_runway_v1";
+const ENDPOINT="save.php";      // co-located backend; absent on static hosts -> local-only
+const TOKEN="CHANGE_ME";        // must match $TOKEN in save.php (bot deterrence, not a real secret)
+let state={}, mode="local";
+function lsLoad(){try{return JSON.parse(localStorage.getItem(KEY))||{}}catch(e){return {}}}
+function lsSave(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}
+async function bootstrap(){
+  try{
+    const r=await fetch(ENDPOINT+"?action=load",{cache:"no-store"});
+    if(!r.ok) throw 0;
+    const j=await r.json(); state=(j&&typeof j==="object")?j:{}; mode="server";
+  }catch(e){ state=lsLoad(); mode="local"; }
+  setBadge(); buildTable(); refresh();
+}
+let saveTimer=null;
+function save(){
+  lsSave();                     // always keep a local cache
+  if(mode!=="server"){setBadge();return;}
+  clearTimeout(saveTimer);
+  saveTimer=setTimeout(async()=>{
+    try{
+      const r=await fetch(ENDPOINT,{method:"POST",headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({token:TOKEN,state})});
+      if(!r.ok){mode="local";setBadge("write rejected — saved locally");}
+      else setBadge("saved");
+    }catch(e){mode="local";setBadge("offline — saved locally");}
+  },400);
+}
+function setBadge(msg){const b=document.getElementById("syncBadge");if(!b)return;
+  if(mode==="server"){b.textContent="● "+(msg||"Server sync on");b.style.color="var(--done)";}
+  else{b.textContent="● "+(msg||"Local only (this browser)");b.style.color="var(--prog)";}}
+
+const DAY=86400000;
+const fmt=d=>new Date(d+"T00:00:00").toLocaleDateString("en-GB",{weekday:"short",day:"2-digit",month:"short"});
+const dday=(a,b)=>Math.round((new Date(a+"T00:00:00")-new Date(b+"T00:00:00"))/DAY);
+const todayISO=()=>{const t=new Date();return new Date(t.getTime()-t.getTimezoneOffset()*60000).toISOString().slice(0,10)};
+
+function buildTable(){
+  const host=document.getElementById("phases"); host.innerHTML="";
+  ["Web","AI","Wi-Fi"].forEach(p=>{
+    const meta=PHASES[p], cnt=M.counts[p];
+    const box=document.createElement("div"); box.className="phase";
+    const head=document.createElement("div"); head.className="phaseHead"; head.style.background=meta.color;
+    head.innerHTML=`<span class="pno">PHASE ${meta.no}</span><span class="ptitle">${meta.title}</span>
+      <span class="pmeta">→ ${meta.cert} · ${cnt[0]} modules / ${cnt[1]} sections · target ${fmt(M.checkpoints[p])}</span>`;
+    box.appendChild(head);
+    const sc=document.createElement("div"); sc.className="scroll";
+    const t=document.createElement("table");
+    t.innerHTML=`<thead><tr>
+      <th>#</th><th>Module</th><th>Lvl</th><th class="center">Sec</th>
+      <th class="mono">Start</th><th class="mono">Target</th>
+      <th>Status</th><th class="mono">Actual Done</th><th class="center">Act. Days</th><th class="center">+/− Tgt</th>
+    </tr></thead><tbody></tbody>`;
+    const tb=t.querySelector("tbody");
+    MODS.filter(m=>m.path===p).forEach(m=>{
+      const s=state[m.idx]||{}; const tr=document.createElement("tr");
+      tr.dataset.st=s.status||"Not Started";
+      const note=NOTES[m.module]?`<span class="note">${NOTES[m.module]}</span>`:"";
+      tr.innerHTML=`
+        <td class="mono">${m.idx}</td>
+        <td><span class="modname">${m.module}</span>${note}</td>
+        <td><span class="diff ${m.diff}">${m.diff}</span></td>
+        <td class="center mono">${m.sections}</td>
+        <td class="mono">${fmt(m.start)}</td>
+        <td class="mono">${fmt(m.target)}</td>
+        <td><select class="status">
+          ${["Not Started","In Progress","Done","Blocked"].map(o=>`<option ${(s.status||"Not Started")===o?"selected":""}>${o}</option>`).join("")}
+        </select></td>
+        <td><input type="date" class="adone" value="${s.actualDone||""}"></td>
+        <td class="center"><input type="number" min="0" class="adays" value="${s.actualDays??""}"></td>
+        <td class="var" data-tgt="${m.target}"></td>`;
+      tr.querySelector(".status").onchange=e=>{set(m.idx,"status",e.target.value);tr.dataset.st=e.target.value;refresh()};
+      tr.querySelector(".adone").onchange=e=>{set(m.idx,"actualDone",e.target.value);refresh()};
+      tr.querySelector(".adays").onchange=e=>{set(m.idx,"actualDays",e.target.value===""?null:+e.target.value);refresh()};
+      tb.appendChild(tr);
+    });
+    sc.appendChild(t); box.appendChild(sc); host.appendChild(box);
+  });
+}
+function set(i,k,v){state[i]=state[i]||{};state[i][k]=v;save()}
+
+function refresh(){
+  // per-module variance cells
+  document.querySelectorAll("#phases tbody tr").forEach((tr,n)=>{
+    const idx=+tr.querySelector(".mono").textContent;
+    const cell=tr.querySelector(".var"); const s=state[idx]||{};
+    if(s.status==="Done" && s.actualDone){
+      const v=dday(cell.dataset.tgt,s.actualDone);
+      cell.textContent=(v>=0?"+":"")+v; cell.className="var "+(v>=0?"pos":"neg");
+    } else {cell.textContent="—"; cell.className="var";}
+  });
+  // aggregates
+  const done=MODS.filter(m=>(state[m.idx]||{}).status==="Done");
+  const mDone=done.length, sDone=done.reduce((a,m)=>a+m.sections,0);
+  document.getElementById("mDone").textContent=mDone;
+  document.getElementById("sDone").textContent=sDone;
+  document.getElementById("mBar").style.width=(mDone/37*100)+"%";
+  document.getElementById("sBar").style.width=(sDone/645*100)+"%";
+
+  // latest completed -> current variance
+  let latest=null;
+  done.forEach(m=>{const ad=(state[m.idx]||{}).actualDone; if(ad&&(!latest||ad>latest.ad)) latest={ad,tgt:m.target};});
+  const plannedBuffer=dday(M.deadline,M.plannedFinal);
+  const standEl=document.getElementById("standing");
+  const heroNum=document.getElementById("heroNum");
+  const vtext=document.getElementById("vtext"), vdot=document.getElementById("vdot");
+  let curVar=null, runwayVal=null;
+  if(latest){
+    curVar=dday(latest.tgt,latest.ad);
+    runwayVal=plannedBuffer+curVar;
+    standEl.textContent=(curVar>=0?"+":"")+curVar;
+    standEl.style.color=curVar>=0?"var(--done)":"var(--block)";
+    heroNum.innerHTML=(runwayVal>=0?"+":"")+runwayVal+'<span class="unit"> days</span>';
+    if(runwayVal>=7){vdot.style.background="var(--done)";vtext.textContent="On track — "+runwayVal+" days of buffer left";}
+    else if(runwayVal>=0){vdot.style.background="var(--prog)";vtext.textContent="Tight — only "+runwayVal+" days of buffer";}
+    else{vdot.style.background="var(--block)";vtext.textContent="At risk — "+Math.abs(runwayVal)+" days over the deadline";}
+  } else {
+    standEl.textContent="—"; heroNum.innerHTML='—<span class="unit"> days</span>';
+    vdot.style.background="var(--none)"; vtext.textContent="Log your first finish to start tracking";
+  }
+  // required pace from today
+  const today=todayISO(); const daysLeft=dday(M.deadline,today);
+  const rp=document.getElementById("reqPace");
+  if(daysLeft<=0){rp.innerHTML="0<small> /day</small>";}
+  else{const need=(645-sDone)/(daysLeft*6/7); rp.innerHTML=need.toFixed(1)+'<small> /day</small>';
+       rp.style.color=need>M.pace*1.15?"var(--block)":"var(--ink)";}
+
+  drawRunway(curVar);
+}
+
+function drawRunway(curVar){
+  const r=document.getElementById("runway"); r.innerHTML="";
+  const A=M.startDate, B=M.deadline, span=dday(B,A);
+  const pct=d=>dday(d,A)/span*100;
+  const track=document.createElement("div");track.className="track";r.appendChild(track);
+  const today=todayISO();
+  const tp=Math.max(0,Math.min(100,pct(today)));
+  const fill=document.createElement("div");fill.className="fill";fill.style.width=tp+"%";r.appendChild(fill);
+  // ticks
+  const sl=d=>new Date(d+"T00:00:00").toLocaleDateString("en-GB",{day:"2-digit",month:"short"});
+  [["start",A,sl(A)],["planned",M.plannedFinal,"plan "+sl(M.plannedFinal)],["deadline",B,"end "+sl(B)]].forEach(([cls,d,lab])=>{
+    const x=pct(d);
+    const tk=document.createElement("div");tk.className="tick "+cls;tk.style.left=x+"%";r.appendChild(tk);
+    const tl=document.createElement("div");tl.className="tlabel";tl.style.left=x+"%";tl.textContent=lab;r.appendChild(tl);
+  });
+  // projected finish marker = plannedFinal shifted right by how far behind you are
+  let projISO=M.plannedFinal;
+  if(curVar!==null){const pj=new Date(M.plannedFinal+"T00:00:00").getTime()-curVar*DAY;
+    projISO=new Date(pj).toISOString().slice(0,10);}
+  const mx=Math.max(0,Math.min(100,pct(projISO)));
+  const mk=document.createElement("div");mk.className="marker";mk.style.left=mx+"%";
+  mk.innerHTML=`<div class="pin"></div><div class="ptxt">${curVar===null?"today":"proj. finish"}</div>`;
+  // if nothing logged, pin to today instead
+  if(curVar===null){mk.style.left=tp+"%";}
+  r.appendChild(mk);
+}
+
+document.getElementById("resetBtn").onclick=()=>{
+  if(confirm("Clear all status, dates and day counts on this device?")){state={};save();buildTable();refresh();}
+};
+document.getElementById("exportBtn").onclick=()=>{
+  const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);
+  a.download="htb-progress-"+todayISO()+".json";a.click();URL.revokeObjectURL(a.href);
+};
+document.getElementById("importBtn").onclick=()=>document.getElementById("importFile").click();
+document.getElementById("importFile").onchange=e=>{
+  const f=e.target.files[0]; if(!f)return;
+  const rd=new FileReader();
+  rd.onload=()=>{try{state=JSON.parse(rd.result)||{};save();buildTable();refresh();
+    alert("Progress imported.");}catch(err){alert("That file isn't a valid progress export.");}};
+  rd.readAsText(f); e.target.value="";
+};
+bootstrap();
+</script>
+</body>
+</html>
